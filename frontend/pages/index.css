@@ -1,0 +1,117 @@
+/* === GLOBAL STYLE FOR FINANSPAM === */
+
+/* Importation d’une belle police moderne */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+  --primary-color: #001f3f;   /* Bleu foncé */
+  --secondary-color: #7fffd4; /* Vert pâle */
+  --accent-color: #ffa500;    /* Orange */
+  --text-light: #ffffff;
+  --text-dark: #0a0a0a;
+}
+
+/* Style global pour tout le site */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--primary-color);
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-light);
+  overflow-x: hidden;
+}
+
+/* Liens (dans la navbar, footer, etc.) */
+a {
+  color: var(--secondary-color);
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+a:hover {
+  color: var(--accent-color);
+}
+
+/* Boutons réutilisables */
+button {
+  background-color: var(--secondary-color);
+  border: none;
+  border-radius: 8px;
+  color: var(--primary-color);
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background-color: var(--accent-color);
+  color: var(--text-dark);
+  transform: scale(1.05);
+}
+
+/* Titres et textes */
+h1, h2, h3 {
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+
+p {
+  line-height: 1.6;
+  color: #e5e5e5;
+}
+
+/* Conteneur principal (pour uniformiser la mise en page) */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem 0;
+}
+
+/* Barre de navigation */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(0, 31, 63, 0.9);
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+}
+
+.navbar-links a {
+  margin: 0 1rem;
+  font-weight: 500;
+}
+
+/* Footer simple et élégant */
+.footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: rgba(0, 31, 63, 0.95);
+  color: #cccccc;
+  font-size: 0.9rem;
+  margin-top: 2rem;
+}
+
+/* Animations douces */
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
