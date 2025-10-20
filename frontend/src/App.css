@@ -1,159 +1,120 @@
-/* App.css */
+/* src/App.css */
 
-
+/* --- Couleurs et polices --- */
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #0D1B2A; 
-  background-image: 
-    url('/images/argent-haïtien-portefeuille-noir-fond-en-bois-image146605518.jpg'), 
-    url('/images/cochon-epargne.png');
-  background-position: center center, right bottom;
-  background-repeat: no-repeat, no-repeat;
-  background-size: cover, 100px 100px;
-  color: #F0F0F0;
+  background-color: #0B1D51; /* bleu foncé */
+  color: #ffffff;
 }
 
-/* Navigation */
-nav {
-  background-color: rgba(13, 27, 42, 0.95);
-  padding: 15px 20px;
-  display: flex;
-  justify-content: flex-start;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+h1, h2, h3 {
+  color: #FFD700; /* or pour titres */
 }
 
-nav a {
-  text-decoration: none;
-  color: #FCA311; /* orange */
-  font-weight: bold;
-  margin-right: 20px;
-  transition: color 0.3s;
-}
-
-nav a:hover {
-  color: #A8D5BA; /* vert pâle */
-}
-
-/* Conteneurs principaux */
-div {
-  max-width: 900px;
-  margin: 20px auto;
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-}
-
-/* Titres */
-h1, h2 {
-  text-align: center;
-  color: #FCA311; /* orange */
-  margin-bottom: 20px;
-}
-
-/* Cartes Dashboard */
-.card-container {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  margin: 20px 0;
-}
-
-.card {
-  background-color: rgba(255, 255, 255, 0.1);
-  width: 200px;
-  padding: 20px;
-  margin: 10px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-  border-top: 5px solid #FCA311; /* accent orange */
-}
-
-.card h3 {
-  margin-bottom: 10px;
-  color: #A8D5BA; /* vert pâle */
-}
-
-.card p {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-/* Boutons */
 button {
-  background-color: #A8D5BA; /* vert pâle */
-  color: #0D1B2A; /* texte bleu foncé */
+  padding: 8px 12px;
   border: none;
-  padding: 8px 15px;
-  margin: 5px;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.3s, color 0.3s;
+  transition: 0.3s;
 }
 
 button:hover {
-  background-color: #FCA311; /* orange au survol */
-  color: #0D1B2A;
+  opacity: 0.8;
 }
 
-/* Inputs et selects */
+/* --- Formulaires et inputs --- */
 input, select {
-  padding: 6px 10px;
-  margin: 5px 10px 5px 0;
-  border-radius: 5px;
-  border: 1px solid #FCA311; /* orange */
-  background-color: rgba(255,255,255,0.1);
-  color: #F0F0F0;
-}
-
-/* Listes */
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
   padding: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: none;
+  width: 100%;
+  max-width: 300px;
 }
 
-/* Hero image ou logo */
-.hero img {
-  width: 150px;
-  display: block;
+input:focus, select:focus {
+  outline: 2px solid #90EE90; /* vert pâle focus */
+}
+
+/* --- Boutons spécifiques --- */
+button.add-btn {
+  background-color: #90EE90; /* vert pâle */
+  color: #000;
+}
+
+button.delete-btn {
+  background-color: #FF7F50; /* orange */
+  color: #fff;
+}
+
+/* --- Messages --- */
+.error {
+  color: #FF6347; /* rouge/orange pour erreur */
+  font-weight: bold;
+}
+
+.success {
+  color: #90EE90; /* vert pâle pour succès */
+  font-weight: bold;
+}
+
+/* --- Containers pages --- */
+.dashboard, .transactions-page, .transaction-detail, .categories-page, .budget-page {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+  background-color: rgba(11, 29, 81, 0.85); /* semi-transparent bleu foncé */
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+/* --- Cartes transactions --- */
+.transaction-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+/* --- Graphique chart.js --- */
+.chart-container {
+  max-width: 500px;
   margin: 20px auto;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 10px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  div {
-    margin: 10px;
-    padding: 15px;
+/* --- Images décoratives --- */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/images/argent-haïtien-portefeuille-noir-fond-en-bois.jpg'), url('/images/cochon-epargne.png');
+  background-repeat: no-repeat, no-repeat;
+  background-position: top right, bottom left;
+  background-size: 200px auto, 150px auto;
+  opacity: 0.15;
+  z-index: -1;
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .chart-container {
+    max-width: 100%;
   }
 
-  nav {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  nav a {
-    margin-bottom: 10px;
-  }
-
-  .card-container {
-    flex-direction: column;
-    align-items: center;
+  input, select {
+    max-width: 100%;
   }
 }
+
 
 
 

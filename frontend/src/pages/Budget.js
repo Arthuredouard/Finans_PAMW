@@ -1,12 +1,23 @@
-import React from "react";
-import BudgetSummary from "../components/BudgetSummary";
+// src/pages/Budget.jsx
+import React, { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 
-export default function Budget() {
+const Budget = () => {
+  const { budget, transactions } = useContext(AppContext);
+
+  const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
+
   return (
-    <div className="page budget">
-      <h2>Budget</h2>
-      <BudgetSummary />
+    <div className="budget-page">
+      <h1>Budget FinansPam</h1>
+      <p>Total Budget: {budget} HTG</p>
+      <p>Total Dépenses: {totalSpent} HTG</p>
+      <p>Solde Restant: {budget - totalSpent} HTG</p>
+      {totalSpent > budget && <p style={{ color: "red" }}>Attention: budget dépassé !</p>}
     </div>
   );
-}
+};
+
+export default Budget;
+
 

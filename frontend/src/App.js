@@ -1,5 +1,7 @@
+// src/App.js
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AppProvider } from "./context/AppContext";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -8,41 +10,22 @@ import TransactionDetail from "./pages/TransactionDetail";
 import Categories from "./pages/Categories";
 import Budget from "./pages/Budget";
 
-// Contexte global
-import { AppProvider } from "./context/AppContext";
-
-// Styles
-import "./App.css";
+// Composant 404
+const NotFound = () => <h2>Page non trouvée</h2>;
 
 function App() {
   return (
     <AppProvider>
       <Router>
-        <div className="app">
-          <header className="app-header">
-            <h1>FinansPam</h1>
-            <nav>
-              <Link to="/">Dashboard</Link>
-              <Link to="/transactions">Transactions</Link>
-              <Link to="/categories">Catégories</Link>
-              <Link to="/budget">Budget</Link>
-            </nav>
-          </header>
-
-          <main>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/transactions" element={<Transactions />} />
-              <Route path="/transactions/:id" element={<TransactionDetail />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/budget" element={<Budget />} />
-            </Routes>
-          </main>
-
-          <footer className="app-footer">
-            <p>&copy; 2025 FinansPam</p>
-          </footer>
-        </div>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/transaction/:id" element={<TransactionDetail />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/budget" element={<Budget />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </Router>
     </AppProvider>
   );

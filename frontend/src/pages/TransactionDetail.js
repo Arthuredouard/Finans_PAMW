@@ -1,20 +1,28 @@
+// src/pages/TransactionDetail.jsx
 import React, { useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
-import TransactionCard from "../components/TransactionCard";
 
-export default function TransactionDetail() {
+const TransactionDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { transactions } = useContext(AppContext);
+
   const transaction = transactions.find((t) => t.id === parseInt(id));
 
   if (!transaction) return <p>Transaction introuvable</p>;
 
   return (
-    <div className="page transaction-detail">
-      <h2>Détails de la transaction</h2>
-      <TransactionCard transaction={transaction} />
+    <div className="transaction-detail">
+      <h1>Détail de la transaction</h1>
+      <p><strong>Nom:</strong> {transaction.name}</p>
+      <p><strong>Montant:</strong> {transaction.amount} HTG</p>
+      <p><strong>Catégorie:</strong> {transaction.categoryName}</p>
+      <button onClick={() => navigate("/transactions")} style={{ backgroundColor: "#90EE90" }}>Retour</button>
     </div>
   );
-}
+};
+
+export default TransactionDetail;
+
 

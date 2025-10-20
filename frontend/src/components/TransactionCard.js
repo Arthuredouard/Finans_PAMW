@@ -1,18 +1,22 @@
-import React from "react";
+// src/components/TransactionCard.jsx
+import React, { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 
-export default function TransactionCard({ transaction }) {
+const TransactionCard = ({ transaction }) => {
+  const { deleteTransaction } = useContext(AppContext);
+
   return (
-    <div className="transaction-card" style={{
-      border: "1px solid #ccc",
-      padding: "10px",
-      marginBottom: "10px",
-      borderRadius: "5px",
-      backgroundColor: "#f7f7f7"
-    }}>
-      <p><strong>Nom :</strong> {transaction.name}</p>
-      <p><strong>Montant :</strong> {transaction.amount} HTG</p>
-      <p><strong>Catégorie :</strong> {transaction.category}</p>
-      <p><strong>Date :</strong> {transaction.date}</p>
+    <div className="transaction-card">
+      <p>
+        <strong>{transaction.name}</strong> - {transaction.amount} HTG
+      </p>
+      <p>Catégorie: {transaction.categoryName}</p>
+      <button onClick={() => deleteTransaction(transaction.id)} style={{ backgroundColor: "#FF7F50" }}>
+        Supprimer
+      </button>
     </div>
   );
-}
+};
+
+export default TransactionCard;
+
