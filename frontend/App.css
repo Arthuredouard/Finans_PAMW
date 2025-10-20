@@ -1,10 +1,10 @@
 /* App.css */
 
-/* Arrière-plan global bleu foncé avec images */
+
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #0D1B2A; /* bleu foncé */
+  background-color: #0D1B2A; 
   background-image: 
     url('/images/argent-haïtien-portefeuille-noir-fond-en-bois-image146605518.jpg'), 
     url('/images/cochon-epargne.png');

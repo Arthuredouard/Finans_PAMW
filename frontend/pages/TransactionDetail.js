@@ -1,23 +1,20 @@
-// src/pages/TransactionDetail.js
-import React, { useContext } from 'react';
-import { AppContext } from '../context/AppContext';
-import '../App.css';
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
+import TransactionCard from "../components/TransactionCard";
 
-const TransactionDetail = ({ transactionId }) => {
+export default function TransactionDetail() {
+  const { id } = useParams();
   const { transactions } = useContext(AppContext);
-  const transaction = transactions.find(t => t.id === transactionId);
+  const transaction = transactions.find((t) => t.id === parseInt(id));
 
-  if (!transaction) return <p>Transaction non trouvée</p>;
+  if (!transaction) return <p>Transaction introuvable</p>;
 
   return (
-    <div>
-      <h1>Détails de la transaction</h1>
-      <p><strong>Titre :</strong> {transaction.title}</p>
-      <p><strong>Montant :</strong> ${transaction.amount}</p>
-      <p><strong>Type :</strong> {transaction.type}</p>
+    <div className="page transaction-detail">
+      <h2>Détails de la transaction</h2>
+      <TransactionCard transaction={transaction} />
     </div>
   );
-};
+}
 
-export default TransactionDetail;
-tail;

@@ -1,22 +1,17 @@
-// src/pages/Categories.js
-import React, { useContext } from 'react';
-import { AppContext } from '../context/AppContext';
-import '../App.css';
+import React, { useContext } from "react";
+import { AppContext } from "../context/AppContext";
+import CategoryCard from "../components/CategoryCard";
 
-const Categories = () => {
+export default function Categories() {
   const { categories } = useContext(AppContext);
 
   return (
-    <div>
-      <h1>Catégories</h1>
-      <ul>
-        {categories.map(c => (
-          <li key={c.id}>{c.name}</li>
-        ))}
-      </ul>
-      <button>Ajouter catégorie</button>
+    <div className="page categories">
+      <h2>Catégories</h2>
+      {categories.map((cat, index) => (
+        <CategoryCard key={index} category={cat} />
+      ))}
     </div>
   );
-};
+}
 
-export default Categories;

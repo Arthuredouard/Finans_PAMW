@@ -1,25 +1,18 @@
-// src/pages/Transactions.js
-import React, { useContext } from 'react';
-import { AppContext } from '../context/AppContext';
-import '../App.css';
+import React, { useContext } from "react";
+import { AppContext } from "../context/AppContext";
+import TransactionCard from "../components/TransactionCard";
 
-const Transactions = () => {
+export default function Transactions() {
   const { transactions } = useContext(AppContext);
 
   return (
-    <div>
-      <h1>Transactions</h1>
-      <ul>
-        {transactions.map(t => (
-          <li key={t.id}>
-            <span>{t.title} ({t.type})</span>
-            <span>${t.amount}</span>
-          </li>
-        ))}
-      </ul>
+    <div className="page transactions">
+      <h2>Transactions</h2>
+      {transactions.map((t, index) => (
+        <TransactionCard key={index} transaction={t} />
+      ))}
     </div>
   );
-};
+}
 
-export default Transactions;
 
