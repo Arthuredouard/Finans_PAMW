@@ -1,48 +1,84 @@
-// src/pages/Dashboard.jsx
-import React, { useContext } from "react";
+// src/pages/Dashboard.js
+import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
-import { Pie } from "react-chartjs-2";
-import 'chart.js/auto';
-import TransactionCard from "../components/TransactionCard";
+import { Link } from "react-router-dom";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "react-chartjs-2";
+import "../App.css";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Dashboard = () => {
-  const { transactions, categories, budget } = useContext(AppContext);
+  const { transactions, categories } = useContext(AppContext);
+  const [recentTransactions, setRecentTransactions] = useState([]);
 
-  // Préparer les données pour le graphique
-  const categoryTotals = categories.map((cat) => {
-    const total = transactions
-      .filter((t) => t.categoryId === cat.id)
-      .reduce((sum, t) => sum + t.amount, 0);
-    return total;
-  });
+  useEffect(() => {
+    // Affiche les 5 dernières transactions
+    if (transactions) {
+      const sorted = [...transactions].sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+      setRecentTransactions(sorted.slice(0, 5));
+    }
+  }, [transactions]);
 
+  // Préparation des données pour le graphique budget/dépenses
   const data = {
-    labels: categories.map((cat) => cat.name),
+    labels: categories?.map(cat => cat.name) || [],
     datasets: [
       {
         label: "Dépenses par catégorie",
-        data: categoryTotals,
-        backgroundColor: ["#36A2EB", "#FFCE56", "#FF6384", "#4BC0C0"],
+        data: categories?.map(cat =>
+          transactions
+            ?.filter(t => t.categoryId === cat.id)
+            .reduce((sum, t) => sum + t.amount, 0) || 0
+        ) || [],
+        backgroundColor: categories?.map(
+          () =>
+            `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+              Math.random() * 200
+            )}, ${Math.floor(Math.random() * 200)}, 0.6)`
+        ) || [],
+        borderWidth: 1,
       },
     ],
   };
 
   return (
     <div className="dashboard">
-      <h1>Dashboard FinansPam</h1>
-      <h3>Budget total: {budget} HTG</h3>
+      <h1>Finans Pamw</h1>
+      <h2>Ann nou jere lajan n!</h2>
 
-      <div className="chart-container">
-        {categories.length > 0 ? <Pie data={data} /> : <p>Aucune donnée à afficher</p>}
+      <div className="dashboard-links">
+        <Link to="/transactions" className="dashboard-btn">
+          Transactions
+        </Link>
+        <Link to="/categories" className="dashboard-btn">
+          Categories
+        </Link>
+        <Link to="/budget" className="dashboard-btn">
+          Budgets
+        </Link>
       </div>
 
-      <h2>Dernières transactions</h2>
-      {transactions.slice(-5).map((t) => (
-        <TransactionCard key={t.id} transaction={t} />
-      ))}
+      <div className="dashboard-graph">
+        <h3>Dépenses par catégorie</h3>
+        <Doughnut data={data} />
+      </div>
+
+      <div className="dashboard-recent">
+        <h3>Transactions récentes</h3>
+        <ul>
+          {recentTransactions.map(t => (
+            <li key={t.id}>
+              {t.description} - {t.amount} HTG -{" "}
+              {new Date(t.date).toLocaleDateString()}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
 
 export default Dashboard;
-

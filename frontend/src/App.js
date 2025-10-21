@@ -1,6 +1,6 @@
 // src/App.js
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
 
 // Pages
@@ -13,10 +13,31 @@ import Budget from "./pages/Budget";
 // Composant 404
 const NotFound = () => <h2>Page non trouvée</h2>;
 
+
+const Navbar = () => {
+  return (
+    <nav style={{
+      backgroundColor: "#003366",
+      padding: "1rem",
+      display: "flex",
+      justifyContent: "space-around",
+      color: "#fff"
+    }}>
+      <Link to="/dashboard" style={{ color: "#1af053ff", textDecoration: "none" }}>Dashboard</Link>
+      <Link to="/transactions" style={{ color: "#56de29ff", textDecoration: "none" }}>Transactions</Link>
+      <Link to="/categories" style={{ color: "#1ad410ff", textDecoration: "none" }}>Categories</Link>
+      <Link to="/budget" style={{ color: "#15db2cff", textDecoration: "none" }}>Budget</Link>
+    </nav>
+  );
+};
+
 function App() {
   return (
     <AppProvider>
       <Router>
+        {/* Navbar intégré */}
+        <Navbar />
+
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -32,3 +53,4 @@ function App() {
 }
 
 export default App;
+
