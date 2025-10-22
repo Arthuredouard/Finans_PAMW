@@ -23,13 +23,23 @@ function Transactions() {
 
   // Gérer le formulaire d’ajout
   const handleChange = (e) => {
-    setNewTransaction({ ...newTransaction, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setNewTransaction((prev) => ({
+      ...prev,
+      [name]: name === "amount" ? parseFloat(value) : value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const transactionToSend = {
+      ...newTransaction,
+      amount: parseFloat(newTransaction.amount), // ✅ conversion sécurisée
+    };
+
     axios
-      .post("http://localhost:5000/api/transactions", newTransaction)
+      .post("http://localhost:5000/api/transactions", transactionToSend)
       .then((res) => {
         setTransactions([...transactions, res.data]);
         setNewTransaction({ description: "", amount: "", category: "", date: "" });
@@ -62,6 +72,8 @@ function Transactions() {
           type="number"
           name="amount"
           placeholder="Montant"
+          min="0"
+          step="0.01"
           value={newTransaction.amount}
           onChange={handleChange}
           required
@@ -128,4 +140,3 @@ function Transactions() {
 }
 
 export default Transactions;
-
