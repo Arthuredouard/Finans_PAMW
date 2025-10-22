@@ -1,7 +1,9 @@
-// src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
+
+// ✅ Import du fichier CSS global
+import "./App.css"; // Assure-toi que ton CSS est bien dans src/App.css
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -12,7 +14,6 @@ import Budget from "./pages/Budget";
 
 // Composant 404
 const NotFound = () => <h2>Page non trouvée</h2>;
-
 
 const Navbar = () => {
   return (
@@ -35,9 +36,7 @@ function App() {
   return (
     <AppProvider>
       <Router>
-        {/* Navbar intégré */}
         <Navbar />
-
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="/dashboard" element={<Dashboard />} />

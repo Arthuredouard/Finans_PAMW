@@ -1,4 +1,3 @@
-// src/pages/Dashboard.js
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
@@ -11,18 +10,27 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const Dashboard = () => {
   const { transactions, categories } = useContext(AppContext);
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
 
   useEffect(() => {
-    // Affiche les 5 dernières transactions
     if (transactions) {
       const sorted = [...transactions].sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );
-      setRecentTransactions(sorted.slice(0, 5));
+      const latest = sorted.slice(0, 5);
+      setRecentTransactions(latest);
+      setFilteredTransactions(latest);
     }
   }, [transactions]);
 
-  // Préparation des données pour le graphique budget/dépenses
+  const handleSearch = () => {
+    const filtered = recentTransactions.filter(t =>
+      t.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredTransactions(filtered);
+  };
+
   const data = {
     labels: categories?.map(cat => cat.name) || [],
     datasets: [
@@ -49,16 +57,22 @@ const Dashboard = () => {
       <h1>Finans Pamw</h1>
       <h2>Ann nou jere lajan n!</h2>
 
+      {/* Images visibles */}
+      <div className="image-container">
+        <img
+          src="https://pngimg.com/uploads/piggy_bank/piggy_bank_PNG42.png"
+          alt="Piggy Bank"
+        />
+        <img
+          src="https://pngimg.com/uploads/money/money_PNG3518.png"
+          alt="Money"
+        />
+      </div>
+
       <div className="dashboard-links">
-        <Link to="/transactions" className="dashboard-btn">
-          Transactions
-        </Link>
-        <Link to="/categories" className="dashboard-btn">
-          Categories
-        </Link>
-        <Link to="/budget" className="dashboard-btn">
-          Budgets
-        </Link>
+        <Link to="/transactions" className="dashboard-btn">Transactions</Link>
+        <Link to="/categories" className="dashboard-btn">Categories</Link>
+        <Link to="/budget" className="dashboard-btn">Budgets</Link>
       </div>
 
       <div className="dashboard-graph">
@@ -66,10 +80,21 @@ const Dashboard = () => {
         <Doughnut data={data} />
       </div>
 
+      {/* Barre de recherche large avec bouton */}
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="Rechercher une transaction..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
+        <button onClick={handleSearch}>Rechercher</button>
+      </div>
+
       <div className="dashboard-recent">
         <h3>Transactions récentes</h3>
         <ul>
-          {recentTransactions.map(t => (
+          {filteredTransactions.map(t => (
             <li key={t.id}>
               {t.description} - {t.amount} HTG -{" "}
               {new Date(t.date).toLocaleDateString()}
@@ -82,3 +107,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

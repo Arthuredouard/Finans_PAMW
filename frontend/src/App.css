@@ -1,75 +1,118 @@
-/* src/App.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-/* Style global du body avec image de fond */
+:root {
+  --primary-color: #001f3f;
+  --secondary-color: #7fffd4;
+  --accent-color: #ffa500;
+  --text-light: #ffffff;
+  --text-dark: #0a0a0a;
+}
+
 body {
   margin: 0;
-  font-family: 'Arial', sans-serif;
-  background-color: #0b3d91; /* bleu foncé */
-  
-  background-position: center top, center bottom; /* cochon en haut, billet en bas */
-  background-repeat: no-repeat, no-repeat;
-  background-size: 150px auto, 300px auto;
-  color: #fff;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #001f3f 0%, #00e6b8 100%);
+  color: var(--text-light);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Images visibles */
+.image-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 2rem;
+}
+
+.image-container img {
+  max-height: 200px;
+  object-fit: contain;
+}
+
+/* Barre de recherche large */
+.search-bar {
+  width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 16px 24px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1.1rem;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  background-color: #ffffff;
+  color: #333;
+}
+
+.search-bar button {
+  padding: 16px 24px;
+  border-radius: 10px;
+  border: none;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.search-bar button:hover {
+  background-color: var(--accent-color);
+  color: var(--text-dark);
+  transform: scale(1.05);
+}
+
+/* Dashboard */
+.dashboard {
+  padding: 2rem;
   min-height: 100vh;
 }
 
-/* Container principal pour login */
-.login-container {
-  max-width: 400px;
-  margin: 100px auto;
-  padding: 30px;
-  background-color: rgba(11, 61, 145, 0.85); /* bleu foncé semi-transparent */
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-  text-align: center;
+.dashboard-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-/* Titre de connexion */
-.login-container h2 {
-  margin-bottom: 20px;
-  color: #a0e1a0; /* vert pâle */
-  font-size: 28px;
-}
-
-/* Formulaire */
-.login-form input {
-  width: 80%;
-  padding: 12px;
-  margin: 10px 0;
+.dashboard-btn {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  padding: 10px 20px;
   border-radius: 8px;
-  border: none;
-  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s;
 }
 
-/* Bouton */
-.login-form button {
-  width: 85%;
-  padding: 12px;
-  background-color: #a0e1a0; /* vert pâle */
-  color: #0b3d91; /* texte bleu foncé */
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 10px;
-  transition: 0.3s;
+.dashboard-btn:hover {
+  background-color: var(--accent-color);
+  color: var(--text-dark);
 }
 
-/* Bouton hover */
-.login-form button:hover {
-  background-color: #ff9900; /* orange */
-  color: #fff;
+.dashboard-graph {
+  margin-bottom: 2rem;
 }
 
-/* Message d'erreur */
-.error {
-  color: #ff4d4f; /* rouge clair */
-  margin-bottom: 15px;
-  font-weight: bold;
+.dashboard-recent ul {
+  list-style-type: none;
+  padding-left: 0;
 }
 
-/* Input focus */
-.login-form input:focus {
-  outline: none;
-  box-shadow: 0 0 5px #a0e1a0;
+.dashboard-recent li {
+  background-color: rgba(255,255,255,0.1);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
 }
+
+
+
