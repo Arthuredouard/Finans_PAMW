@@ -6,6 +6,7 @@ import "../App.css";
 
 const Login = () => {
   const { login } = useContext(AppContext);
+  const [user,setUser]=useState("")
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -16,17 +17,20 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/login", {
+      const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       const data = await response.json();
-
+      console.log(data)
+      
+      console.log(response.ok)
       if (response.ok) {
         // authentification réussie
-        login(data.user); // on met à jour le contexte
+        setUser(data.user); 
         navigate("/dashboard");
       } else {
         setError(data.message); // message renvoyé par le backend

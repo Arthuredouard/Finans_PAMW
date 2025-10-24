@@ -1,13 +1,15 @@
 from app import app
 from models import db, User, Account, Category, Transaction
+from werkzeug.security import generate_password_hash
 
 with app.app_context():
     db.drop_all()
     db.create_all()
-
+ 
+    hashed_pw = generate_password_hash('password', method='pbkdf2:sha256')
     # Users
-    user1 = User(name="Gaëtan", email="gaetan@example.com")
-    user2 = User(name="Marie", email="marie@example.com")
+    user1 = User(name="Gaëtan", email="gaetan@example.com", password=hashed_pw)
+    user2 = User(name="Marie", email="marie@example.com", password=hashed_pw)
     db.session.add_all([user1, user2])
     db.session.commit()
 

@@ -6,6 +6,7 @@ import "../App.css";
 
 function Transactions() {
   const { transactions, setTransactions } = useContext(AppContext);
+  const [trans,setTrans]=useState([]);
   const [newTransaction, setNewTransaction] = useState({
     description: "",
     amount: "",
@@ -14,22 +15,36 @@ function Transactions() {
   });
 
   // Charger les transactions depuis le backend
+
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/transactions")
-      .then((res) => setTransactions(res.data))
+    fetch("http://localhost:5000/transactions")
+      .then((res) => res.json())
+      .then((data) => {
+        setTrans(data);
+        console.log("Transactions chargées :", data);
+      })
       .catch((err) => console.error("Erreur lors du chargement :", err));
-  }, [setTransactions]);
+  }, []);
 
   // Gérer le formulaire d’ajout
   const handleChange = (e) => {
-    setNewTransaction({ ...newTransaction, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setNewTransaction((prev) => ({
+      ...prev,
+      [name]: name === "amount" ? parseFloat(value) : value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const transactionToSend = {
+      ...newTransaction,
+      amount: parseFloat(newTransaction.amount), // ✅ conversion sécurisée
+    };
+
     axios
-      .post("http://localhost:5000/api/transactions", newTransaction)
+      .post("http://localhost:5000/transactions", transactionToSend)
       .then((res) => {
         setTransactions([...transactions, res.data]);
         setNewTransaction({ description: "", amount: "", category: "", date: "" });
@@ -39,7 +54,7 @@ function Transactions() {
 
   const handleDelete = (id) => {
     axios
-      .delete(`http://localhost:5000/api/transactions/${id}`)
+      .delete(`http://localhost:5000/transactions/${id}`)
       .then(() => setTransactions(transactions.filter((t) => t.id !== id)))
       .catch((err) => console.error("Erreur lors de la suppression :", err));
   };
@@ -62,6 +77,8 @@ function Transactions() {
           type="number"
           name="amount"
           placeholder="Montant"
+          min="0"
+          step="0.01"
           value={newTransaction.amount}
           onChange={handleChange}
           required
@@ -86,7 +103,7 @@ function Transactions() {
 
       {/* Liste des transactions */}
       <div className="list-section">
-        {transactions.length === 0 ? (
+        {trans.length === 0 ? (
           <p>Aucune transaction enregistrée.</p>
         ) : (
           <table>
@@ -101,7 +118,7 @@ function Transactions() {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((t) => (
+              {trans.map((t) => (
                 <tr key={t.id}>
                   <td>{t.description}</td>
                   <td>{t.amount}</td>
@@ -128,4 +145,3 @@ function Transactions() {
 }
 
 export default Transactions;
-
