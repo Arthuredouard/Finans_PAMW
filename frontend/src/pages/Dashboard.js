@@ -31,6 +31,31 @@ const Dashboard = () => {
     setFilteredTransactions(filtered);
   };
 
+  const handleLogout = async () => {
+  const token = localStorage.getItem("token"); // récupère le JWT stocké au login
+
+  try {
+    const response = await fetch("http://localhost:5000/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      localStorage.removeItem("token"); // supprime le token côté client
+      window.location.href = "/";
+    } else {
+      const data = await response.json();
+      console.error("Erreur lors de la déconnexion:", data.message);
+    }
+  } catch (err) {
+    console.error("Erreur serveur lors de la déconnexion:", err);
+  }
+};
+
   const data = {
     labels: categories?.map(cat => cat.name) || [],
     datasets: [
@@ -56,6 +81,7 @@ const Dashboard = () => {
     <div className="dashboard">
       <h1>Finans Pamw</h1>
       <h2>Ann nou jere lajan n!</h2>
+      <h4>Bienvenue  !!!</h4>
 
       {/* Images visibles */}
       <div className="image-container">
@@ -68,19 +94,6 @@ const Dashboard = () => {
           alt="Money"
         />
       </div>
-
-      <div className="dashboard-links">
-        <Link to="/transactions" className="dashboard-btn">Transactions</Link>
-        <Link to="/categories" className="dashboard-btn">Categories</Link>
-        <Link to="/budget" className="dashboard-btn">Budgets</Link>
-      </div>
-
-      <div className="dashboard-graph">
-        <h3>Dépenses par catégorie</h3>
-        <Doughnut data={data} />
-      </div>
-
-      {/* Barre de recherche large avec bouton */}
       <div className="search-bar">
         <input
           type="text"
@@ -90,6 +103,20 @@ const Dashboard = () => {
         />
         <button onClick={handleSearch}>Rechercher</button>
       </div>
+
+      <div className="logout-wrapper">
+      <button className="logout-btn" onClick={handleLogout}>
+      LOGOUT
+      </button>
+      </div>
+   
+      <div className="dashboard-graph">
+        <h3>Dépenses par catégorie</h3>
+        <Doughnut data={data} />
+      </div>
+
+      {/* Barre de recherche large avec bouton */}
+
 
       <div className="dashboard-recent">
         <h3>Transactions récentes</h3>
@@ -102,6 +129,7 @@ const Dashboard = () => {
           ))}
         </ul>
       </div>
+      
     </div>
   );
 };

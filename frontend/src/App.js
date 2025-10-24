@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
 
-// ✅ Import du fichier CSS global
 import "./App.css"; // Assure-toi que ton CSS est bien dans src/App.css
 
 // Pages
@@ -17,6 +16,7 @@ import Login from "./pages/Login";
 const NotFound = () => <h2>Page non trouvée</h2>;
 
 const Navbar = () => {
+  
   return (
     <nav style={{
       backgroundColor: "#003366",
@@ -34,18 +34,18 @@ const Navbar = () => {
 };
 
 function App() {
+
   return (
     <AppProvider>
-      <Router>
-        <Navbar />
+      <Router> 
         <Routes>
-          <Route path="/" element={<Login/>} />
-          <Route path="/ti" element={<Navigate to="/dashboard" />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/transactions" element={<Transactions />} />
-          <Route path="/transaction/:id" element={<TransactionDetail />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/budget" element={<Budget />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/ti" element={<><Navbar /><Dashboard /></>} />
+          <Route path="/dashboard" element={<><Navbar /><Dashboard /></>} />
+          <Route path="/transactions" element={<><Navbar /><Transactions /></>} />
+          <Route path="/transaction/:id" element={<><Navbar /><TransactionDetail /></>} />
+          <Route path="/categories" element={<><Navbar /><Categories /></>} />
+          <Route path="/budget" element={<><Navbar /><Budget /></>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

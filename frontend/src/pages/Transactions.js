@@ -17,10 +17,18 @@ function Transactions() {
   // Charger les transactions depuis le backend
 
   useEffect(() => {
-    fetch("http://localhost:5000/transactions")
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:5000/transactions", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
-        setTrans(data);
+        setTrans(data.transactions);
+        console.log("Token utilisé :", token);
         console.log("Transactions chargées :", data);
       })
       .catch((err) => console.error("Erreur lors du chargement :", err));
@@ -103,7 +111,7 @@ function Transactions() {
 
       {/* Liste des transactions */}
       <div className="list-section">
-        {trans.length === 0 ? (
+        {!trans || trans.length === 0 ? (
           <p>Aucune transaction enregistrée.</p>
         ) : (
           <table>

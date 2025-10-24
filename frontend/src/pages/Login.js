@@ -3,12 +3,11 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import "../App.css";
+import "/home/Charging/Finans_PAMW/frontend/src/pages/Login.css"
 
 const Login = () => {
-  const { login } = useContext(AppContext);
-  const [user,setUser]=useState("")
   const navigate = useNavigate();
-
+  const [user, setUser] = useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -30,6 +29,7 @@ const Login = () => {
       console.log(response.ok)
       if (response.ok) {
         // authentification réussie
+        localStorage.setItem("token", data.token); 
         setUser(data.user); 
         navigate("/dashboard");
       } else {

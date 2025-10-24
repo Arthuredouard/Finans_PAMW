@@ -1,11 +1,32 @@
 from flask import Blueprint, jsonify, request
 from models import db, Transaction, Category
+from functools import wraps
+from flask_cors import cross_origin 
 
 transactions_bp = Blueprint('transactions_bp', __name__)
 
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.args.get('token')
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 401
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            current_user = data['user']
+        except:
+            return jsonify({'message': 'Token is invalid!'}), 401
+        return f(current_user, *args, **kwargs)
+    return decorated
+
+
 @transactions_bp.route('/', methods=['GET'])
-def get_transactions():
-    transactions = Transaction.query.all()
+#@cross_origin(origin='http://localhost:3000', supports_credentials=True)
+@token_required
+def get_transactions(current_user):
+
+    #transactions = Transaction.query.all()
+    transactions = Transaction.query.filter_by(user_id=current_user.id).all()
     result = []
     for t in transactions:
         result.append({

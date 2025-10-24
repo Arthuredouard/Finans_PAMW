@@ -21,6 +21,15 @@ app.config.from_object(Config)
 db.init_app(app)
 migrate = Migrate(app, db)
 CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+#CORS(app, supports_credentials=True, origins=["http://localhost:3000"],
+    #allow_headers=["Content-Type", "Authorization"])
+
+CORS(app,
+    origins=["http://localhost:3000"],
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+
+
 
 app.register_blueprint(users_bp, url_prefix='/users')
 app.register_blueprint(accounts_bp, url_prefix='/accounts')
@@ -50,7 +59,7 @@ def home():
     return jsonify({"message": "Byenvini zanmi mw sou sit nou"})
 
 
-@app.route('/login',methods=['POST'])
+@app.route('/login',methods=['POST','OPTIONS'])
 def login():
     # Récupérer les données JSON envoyées par le client
     data = request.get_json()
@@ -99,7 +108,6 @@ def unprotected():
 @token_required
 def protected(current_user):
     return jsonify({'message': 'This is only available for people with valid tokens.'})
-    
 
 if __name__ == '__main__':
     app.run(debug=True)
