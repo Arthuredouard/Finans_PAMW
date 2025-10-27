@@ -106,5 +106,7 @@ def unprotected():
 def protected(current_user):
     return jsonify({'message': 'This is only available for people with valid tokens.'})
 
+
+
 if __name__ == '__main__':
     app.run(debug=True)
