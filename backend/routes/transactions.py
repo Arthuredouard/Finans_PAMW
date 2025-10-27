@@ -8,25 +8,35 @@ transactions_bp = Blueprint('transactions_bp', __name__)
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.args.get('token')
+        token = None
+
+        # ✅ Récupération du token depuis le header Authorization
+        if 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+            if auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+
         if not token:
             return jsonify({'message': 'Token is missing!'}), 401
+
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            current_user = data['user']
-        except:
+            current_user_email = data['user']
+            current_user = User.query.filter_by(email=current_user_email).first()
+        except Exception as e:
+            print("Erreur token :", e)
             return jsonify({'message': 'Token is invalid!'}), 401
+
         return f(current_user, *args, **kwargs)
     return decorated
 
 
 @transactions_bp.route('/', methods=['GET'])
-#@cross_origin(origin='http://localhost:3000', supports_credentials=True)
 @token_required
 def get_transactions(current_user):
-
-    #transactions = Transaction.query.all()
+    # ✅ Afficher seulement les transactions de l’utilisateur connecté
     transactions = Transaction.query.filter_by(user_id=current_user.id).all()
+
     result = []
     for t in transactions:
         result.append({
@@ -36,7 +46,7 @@ def get_transactions(current_user):
             "type": t.type,
             "categories": [{"id": c.id, "name": c.name} for c in t.categories]
         })
-    return jsonify(result)
+    return jsonify({"transactions": result})
 
 @transactions_bp.route('/', methods=['POST'])
 def create_transaction():

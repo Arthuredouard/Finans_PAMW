@@ -36,6 +36,7 @@ const Login = () => {
         setError(data.message); // message renvoyé par le backend
       }
     } catch (err) {
+      console.log("erreur")
       setError("Erreur serveur, réessayez plus tard");
     }
   };

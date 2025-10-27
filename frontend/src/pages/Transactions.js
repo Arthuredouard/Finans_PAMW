@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import "../App.css";
+import "./Transactions.css";
 
 function Transactions() {
   const { transactions, setTransactions } = useContext(AppContext);
@@ -18,7 +19,7 @@ function Transactions() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/transactions", {
+    fetch("http://localhost:5000/transactions/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

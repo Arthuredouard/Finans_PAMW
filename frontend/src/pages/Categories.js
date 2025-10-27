@@ -1,6 +1,7 @@
 // src/pages/Categories.jsx
 import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
+import "/home/Charging/Finans_PAMW/frontend/src/pages/Categories.css"
 
 const Categories = () => {
   const {
