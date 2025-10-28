@@ -23,3 +23,15 @@ def create_category():
     db.session.add(category)
     db.session.commit()
     return jsonify({"message": "Nouvelle catégorie créée", "category": {"id": category.id, "name": category.name}}), 201
+
+@categories_bp.route('/<int:category_id>', methods=['DELETE'])
+def delete_category(category_id):
+    category = Category.query.get(category_id)
+
+    if not category:
+        return jsonify({"message": "Catégorie introuvable"}), 404
+
+    db.session.delete(category)
+    db.session.commit()
+
+    return jsonify({"message": f"Catégorie '{category.name}' supprimée avec succès"}), 200

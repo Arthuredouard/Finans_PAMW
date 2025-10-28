@@ -1,24 +1,22 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { AppContext } from "../context/AppContext";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import "../App.css";
 import "./Transactions.css";
 
 function Transactions() {
-  const { transactions, setTransactions } = useContext(AppContext);
-  const [trans,setTrans]=useState([]);
+  const [trans, setTrans] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [newTransaction, setNewTransaction] = useState({
     description: "",
     amount: "",
-    category: "",
+    type: "",
+    category_ids: [],
     date: "",
   });
 
-  // Charger les transactions depuis le backend
+  const token = localStorage.getItem("token");
 
+  // Charger les transactions
   useEffect(() => {
-    const token = localStorage.getItem("token");
     fetch("http://localhost:5000/transactions/", {
       method: "GET",
       headers: {
@@ -28,14 +26,28 @@ function Transactions() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setTrans(data.transactions);
-        console.log("Token utilisé :", token);
-        console.log("Transactions chargées :", data);
+        const sanitized = (data.transactions || []).map((t) => ({
+          ...t,
+          categories: Array.isArray(t.categories) ? t.categories : [],
+        }));
+        setTrans(sanitized);
       })
-      .catch((err) => console.error("Erreur lors du chargement :", err));
-  }, []);
+      .catch((err) => console.error("Erreur lors du chargement des transactions :", err));
+  }, [token]);
 
-  // Gérer le formulaire d’ajout
+  // Charger les catégories existantes
+  useEffect(() => {
+    fetch("http://localhost:5000/categories/", {
+      headers: { "Authorization": `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setCategories(data || []);
+      })
+      .catch((err) => console.error("Erreur lors du chargement des catégories :", err));
+  }, [token]);
+
+  // Gestion du formulaire
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewTransaction((prev) => ({
@@ -44,75 +56,71 @@ function Transactions() {
     }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  const token = localStorage.getItem("token");
-
-  const transactionToSend = {
-    user_id: 1, // ⚠️ temporairement, mets un ID existant (test)
-    amount: parseFloat(newTransaction.amount),
-    type: newTransaction.type, // ex: "income" ou "expense"
-    category_ids: [1] // facultatif
+  const handleCategoryChange = (e) => {
+    const id = parseInt(e.target.value);
+    setNewTransaction((prev) => ({
+      ...prev,
+      category_ids: id ? [id] : [],
+    }));
   };
 
-  console.log("Transaction envoyée :", transactionToSend);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      amount: parseFloat(newTransaction.amount),
+      type: newTransaction.type,
+      description: newTransaction.description,
+      date: newTransaction.date || null,
+      category_ids: newTransaction.category_ids,
+    };
 
-  try {
-    const response = await fetch("http://localhost:5000/transactions/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify(transactionToSend),
-    });
-
-    const data = await response.json();
-    console.log("Réponse serveur :", data);
-  } catch (err) {
-    console.error("Erreur fetch :", err);
-  }
-};
-
-
-
-const handleDelete = async (id) => {
-  const token = localStorage.getItem("token");
-
-  try {
-    const response = await fetch(`http://localhost:5000/transactions/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.ok) {
-      console.log(`Transaction ${id} supprimée`);
-
-      // ✅ Mettre à jour localement sans rechargement
-      setTransactions((prev) => prev.filter((t) => t.id !== id));
-
-      // ✅ Puis resynchroniser avec le backend
-      const refresh = await fetch("http://localhost:5000/transactions/", {
-        headers: { "Authorization": `Bearer ${token}` },
+    try {
+      const response = await fetch("http://localhost:5000/transactions/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
       });
-
-      if (refresh.ok) {
-        const data = await refresh.json();
-        setTransactions(data.transactions);
-      }
-    } else {
       const data = await response.json();
-      console.error("Erreur lors de la suppression :", data.message || response.statusText);
-    }
-  } catch (err) {
-    console.error("Erreur réseau :", err);
-  }
-};
 
+      if (response.ok) {
+        const t = {
+          ...data.transaction,
+          categories: Array.isArray(data.transaction.categories) ? data.transaction.categories : [],
+        };
+        setTrans((prev) => [...prev, t]);
+        setNewTransaction({
+          description: "",
+          amount: "",
+          type: "",
+          category_ids: [],
+          date: "",
+        });
+      } else {
+        console.error("Erreur serveur :", data.message);
+      }
+    } catch (err) {
+      console.error("Erreur fetch :", err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:5000/transactions/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) setTrans((prev) => prev.filter((t) => t.id !== id));
+      else console.error("Erreur suppression");
+    } catch (err) {
+      console.error("Erreur réseau :", err);
+    }
+  };
 
   return (
     <div className="page-container">
@@ -140,12 +148,24 @@ const handleDelete = async (id) => {
         />
         <input
           type="text"
-          name="category"
-          placeholder="Catégorie"
-          value={newTransaction.category}
+          name="type"
+          placeholder="Type (revenu / dépense)"
+          value={newTransaction.type}
           onChange={handleChange}
           required
         />
+        <select
+          name="category"
+          value={newTransaction.category_ids[0] || ""}
+          onChange={handleCategoryChange}
+        >
+          <option value="">-- Choisir une catégorie --</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
         <input
           type="date"
           name="date"
@@ -158,7 +178,7 @@ const handleDelete = async (id) => {
 
       {/* Liste des transactions */}
       <div className="list-section">
-        {!trans || trans.length === 0 ? (
+        {trans.length === 0 ? (
           <p>Aucune transaction enregistrée.</p>
         ) : (
           <table>
@@ -166,9 +186,9 @@ const handleDelete = async (id) => {
               <tr>
                 <th>Description</th>
                 <th>Montant (HTG)</th>
-                <th>Catégorie</th>
+                <th>Catégories</th>
                 <th>Date</th>
-                <th>Supprimer</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -176,8 +196,8 @@ const handleDelete = async (id) => {
                 <tr key={t.id}>
                   <td>{t.description}</td>
                   <td>{t.amount}</td>
-                  <td>{t.category}</td>
-                  <td>{t.date}</td>
+                  <td>{t.categories.map((c) => c.name).join(", ") || "Aucune"}</td>
+                  <td>{t.date ? new Date(t.date).toLocaleDateString() : "—"}</td>
                   <td>
                     <button onClick={() => handleDelete(t.id)} className="delete-btn">
                       Supprimer
