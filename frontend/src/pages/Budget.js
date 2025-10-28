@@ -1,11 +1,12 @@
 // src/pages/Budget.jsx
-import React, { useContext,useEffect } from "react";
+import React, { use, useContext,useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 import "/home/Charging/Finans_PAMW/frontend/src/pages/Budget.css"
 
 const Budget = () => {
-  const { budget, transactions1 } = useContext(AppContext);
+  
   const [transactions,setTransactions]=React.useState([]);
+  const [budget, setAccount] = React.useState(null);
 
     useEffect(() => {
       const token = localStorage.getItem("token");
@@ -24,6 +25,25 @@ const Budget = () => {
         })
         .catch((err) => console.error("Erreur lors du chargement :", err));
     }, []);
+
+        useEffect(() => {
+      const token = localStorage.getItem("token");
+      fetch("http://localhost:5000/accounts/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setAccount(data);
+          console.log("Token utilisé :", token);
+          console.log("Balance", data);
+        })
+        .catch((err) => console.error("Erreur lors du chargement :", err));
+    }, []);
+
 
   const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
 
