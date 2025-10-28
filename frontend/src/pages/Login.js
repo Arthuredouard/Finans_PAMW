@@ -62,6 +62,14 @@ const Login = () => {
         />
         <button type="submit">Se connecter</button>
       </form>
+
+        <div className="login-footer">
+        <p>Pas encore de compte ?</p>
+        <button className="register-btn" onClick={() => navigate("/register")}>
+          Inscription
+        </button>
+      </div>
+
     </div>
   );
 };

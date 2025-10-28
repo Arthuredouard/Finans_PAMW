@@ -1,7 +1,7 @@
 from flask import Flask, jsonify,request,make_response
 import jwt,datetime
 from flask_migrate import Migrate
-from flask_cors import CORS
+from flask_cors import CORS,cross_origin
 from dotenv import load_dotenv
 from config import Config
 from models import db
@@ -97,14 +97,43 @@ def logout():
     blacklist.add(token)
     return jsonify({'message': 'Successfully logged out!'}), 200
 
-@app.route('/unprotected')
-def unprotected():
-    return jsonify({'message': 'Anyone can view this!'})
+@app.route('/register', methods=['POST'])
+@cross_origin()
+def register():
+    data = request.get_json()
 
-@app.route('/protected')
-@token_required
-def protected(current_user):
-    return jsonify({'message': 'This is only available for people with valid tokens.'})
+    # Vérifier les champs obligatoires
+    if not data or not data.get('name') or not data.get('email') or not data.get('password'):
+        return jsonify({'message': 'Nom, email et mot de passe requis !'}), 400
+
+    name = data['name']
+    email = data['email']
+    password = data['password']
+
+    # Vérifier si l'utilisateur existe déjà
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return jsonify({'message': 'Un utilisateur avec cet email existe déjà !'}), 409
+
+    # Créer un nouvel utilisateur avec mot de passe hashé
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
+    new_user = User(name=name, email=email, password=hashed_password)
+
+    # Ajouter à la base
+    db.session.add(new_user)
+    db.session.commit()
+
+    # Générer un token
+    token = jwt.encode({
+        'user': new_user.email,
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+    }, app.config['SECRET_KEY'], algorithm='HS256')
+
+    return jsonify({
+        'message': 'Utilisateur créé avec succès !',
+        'token': token
+    }), 201
+
 
 
 

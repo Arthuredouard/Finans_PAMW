@@ -44,29 +44,75 @@ function Transactions() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const transactionToSend = {
-      ...newTransaction,
-      amount: parseFloat(newTransaction.amount), // ✅ conversion sécurisée
-    };
+  const token = localStorage.getItem("token");
 
-    axios
-      .post("http://localhost:5000/transactions", transactionToSend)
-      .then((res) => {
-        setTransactions([...transactions, res.data]);
-        setNewTransaction({ description: "", amount: "", category: "", date: "" });
-      })
-      .catch((err) => console.error("Erreur lors de l’ajout :", err));
+  const transactionToSend = {
+    user_id: 1, // ⚠️ temporairement, mets un ID existant (test)
+    amount: parseFloat(newTransaction.amount),
+    type: newTransaction.type, // ex: "income" ou "expense"
+    category_ids: [1] // facultatif
   };
 
-  const handleDelete = (id) => {
-    axios
-      .delete(`http://localhost:5000/transactions/${id}`)
-      .then(() => setTransactions(transactions.filter((t) => t.id !== id)))
-      .catch((err) => console.error("Erreur lors de la suppression :", err));
-  };
+  console.log("Transaction envoyée :", transactionToSend);
+
+  try {
+    const response = await fetch("http://localhost:5000/transactions/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify(transactionToSend),
+    });
+
+    const data = await response.json();
+    console.log("Réponse serveur :", data);
+  } catch (err) {
+    console.error("Erreur fetch :", err);
+  }
+};
+
+
+
+const handleDelete = async (id) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await fetch(`http://localhost:5000/transactions/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      console.log(`Transaction ${id} supprimée`);
+
+      // ✅ Mettre à jour localement sans rechargement
+      setTransactions((prev) => prev.filter((t) => t.id !== id));
+
+      // ✅ Puis resynchroniser avec le backend
+      const refresh = await fetch("http://localhost:5000/transactions/", {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+
+      if (refresh.ok) {
+        const data = await refresh.json();
+        setTransactions(data.transactions);
+      }
+    } else {
+      const data = await response.json();
+      console.error("Erreur lors de la suppression :", data.message || response.statusText);
+    }
+  } catch (err) {
+    console.error("Erreur réseau :", err);
+  }
+};
+
 
   return (
     <div className="page-container">
@@ -122,7 +168,6 @@ function Transactions() {
                 <th>Montant (HTG)</th>
                 <th>Catégorie</th>
                 <th>Date</th>
-                <th>Détails</th>
                 <th>Supprimer</th>
               </tr>
             </thead>
@@ -133,11 +178,6 @@ function Transactions() {
                   <td>{t.amount}</td>
                   <td>{t.category}</td>
                   <td>{t.date}</td>
-                  <td>
-                    <Link to={`/transactions/${t.id}`} className="detail-link">
-                      Voir
-                    </Link>
-                  </td>
                   <td>
                     <button onClick={() => handleDelete(t.id)} className="delete-btn">
                       Supprimer

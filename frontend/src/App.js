@@ -11,6 +11,7 @@ import TransactionDetail from "./pages/TransactionDetail";
 import Categories from "./pages/Categories";
 import Budget from "./pages/Budget";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 // Composant 404
 const NotFound = () => <h2>Page non trouvée</h2>;
@@ -18,13 +19,8 @@ const NotFound = () => <h2>Page non trouvée</h2>;
 const Navbar = () => {
   
   return (
-    <nav style={{
-      backgroundColor: "#003366",
-      padding: "1rem",
-      display: "flex",
-      justifyContent: "space-around",
-      color: "#fff"
-    }}>
+    <nav className="navbar"
+    >
       <Link to="/dashboard" style={{ color: "#1af053ff", textDecoration: "none" }}>Dashboard</Link>
       <Link to="/transactions" style={{ color: "#56de29ff", textDecoration: "none" }}>Transactions</Link>
       <Link to="/categories" style={{ color: "#1ad410ff", textDecoration: "none" }}>Categories</Link>
@@ -40,6 +36,7 @@ function App() {
       <Router> 
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/ti" element={<><Navbar /><Dashboard /></>} />
           <Route path="/dashboard" element={<><Navbar /><Dashboard /></>} />
           <Route path="/transactions" element={<><Navbar /><Transactions /></>} />

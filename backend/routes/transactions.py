@@ -57,6 +57,24 @@ def get_transactions(current_user):
         })
     return jsonify({"transactions": result})
 
+@transactions_bp.route('/<int:transaction_id>', methods=['DELETE'])
+@token_required
+def delete_transaction(current_user, transaction_id):
+    # 🔍 Récupérer la transaction à supprimer
+    transaction = Transaction.query.filter_by(id=transaction_id, user_id=current_user.id).first()
+
+    if not transaction:
+        return jsonify({"message": "Transaction introuvable ou non autorisée."}), 404
+
+    # 🗑️ Supprimer la transaction
+    db.session.delete(transaction)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Transaction supprimée avec succès.",
+        "transaction_id": transaction_id
+    }), 200
+
 @transactions_bp.route('/', methods=['POST'])
 def create_transaction():
     data = request.json
