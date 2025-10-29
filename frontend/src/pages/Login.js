@@ -3,7 +3,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import "../App.css";
-import "/home/Charging/Finans_PAMW/frontend/src/pages/Login.css"
+import "./Login.css"
 
 const Login = () => {
   const navigate = useNavigate();
