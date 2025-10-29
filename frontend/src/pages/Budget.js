@@ -1,7 +1,7 @@
 // src/pages/Budget.jsx
 import React, { use, useContext,useEffect } from "react";
 import { AppContext } from "../context/AppContext";
-import "/home/Charging/Finans_PAMW/frontend/src/pages/Budget.css"
+import "./Budget.css"
 
 const Budget = () => {
   
