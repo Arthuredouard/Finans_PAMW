@@ -1,4 +1,3 @@
-// src/context/AppContext.js
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
@@ -10,73 +9,160 @@ export const AppProvider = ({ children }) => {
   const [budget, setBudget] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [token, setToken] = useState(null);
+  const [isReady, setIsReady] = useState(false);
 
-  // Charger les données au démarrage
+  const [newTransaction, setNewTransaction] = useState({
+    description: "",
+    amount: "",
+    type: "",
+    category_ids: [],
+    date: "",
+  });
+
+  // Charger le token depuis localStorage au démarrage
   useEffect(() => {
-    fetchData();
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) setToken(storedToken);
+    setIsReady(true);
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const transRes = await axios.get("/api/transactions");
-      const catRes = await axios.get("/api/categories");
-      const budgetRes = await axios.get("/api/budget");
+  // Charger les transactions quand le token est prêt
+  useEffect(() => {
+    if (!token) return;
 
-      setTransactions(transRes.data);
-      setCategories(catRes.data);
-      setBudget(budgetRes.data.totalBudget);
-    } catch (error) {
-      setErrorMessage("Erreur lors du chargement des données.");
-      console.error(error);
-    }
-  };
+    const fetchTransactions = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/transactions/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const sanitized = (res.data.transactions || []).map((t) => ({
+          ...t,
+          categories: Array.isArray(t.categories) ? t.categories : [],
+        }));
+        setTransactions(sanitized);
+      } catch (err) {
+        console.error("Erreur chargement transactions :", err);
+        setErrorMessage("Impossible de charger les transactions (token invalide ?)");
+      }
+    };
+    fetchTransactions();
+  }, [token]);
+
+  // Charger les catégories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/categories/");
+        setCategories(res.data.categories || res.data);
+      } catch (err) {
+        console.error("Erreur chargement catégories :", err);
+        setErrorMessage("Impossible de charger les catégories.");
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Ajouter une transaction
-  const addTransaction = async (transaction) => {
-    if (!transaction.amount || transaction.amount <= 0) {
-      setErrorMessage("Montant invalide.");
+  const addTransaction = async (payload) => {
+    if (!token) {
+      setErrorMessage("Token manquant. Veuillez vous reconnecter.");
       return;
     }
 
     try {
-      const res = await axios.post("/api/transactions", transaction);
-      setTransactions([...transactions, res.data]);
-      setSuccessMessage("Transaction ajoutée !");
-    } catch (error) {
-      setErrorMessage("Impossible d'ajouter la transaction.");
-      console.error(error);
+      const response = await axios.post(
+        "http://localhost:5000/transactions/",
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const t = {
+        ...response.data.transaction,
+        categories: Array.isArray(response.data.transaction.categories)
+          ? response.data.transaction.categories
+          : [],
+      };
+
+      setTransactions((prev) => [...prev, t]);
+    } catch (err) {
+      console.error("Erreur ajout transaction :", err);
+      setErrorMessage("Impossible d’ajouter la transaction.");
     }
   };
 
   // Supprimer une transaction
   const deleteTransaction = async (id) => {
+    if (!token) return;
+
     try {
-      await axios.delete(`/api/transactions/${id}`);
-      setTransactions(transactions.filter((t) => t.id !== id));
-      setSuccessMessage("Transaction supprimée !");
-    } catch (error) {
+      await axios.delete(`http://localhost:5000/transactions/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTransactions((prev) => prev.filter((t) => t.id !== id));
+    } catch (err) {
+      console.error("Erreur suppression transaction :", err);
       setErrorMessage("Impossible de supprimer la transaction.");
-      console.error(error);
     }
   };
+
+  // Charger le budget
+const fetchBudget = async () => {
+  const token = localStorage.getItem("token");
+  console.log("junior",token)
+  if (!token) {
+    setErrorMessage("Token manquant. Veuillez vous reconnecter.");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/accounts/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.message || "Erreur lors du chargement du budget");
+    }
+
+    const data = await response.json();
+    console.log("Budget chargé :", data.balance);
+
+    // Assurez-vous que le backend renvoie bien data.totalBudget
+    setBudget(data.balance || 0);
+  } catch (err) {
+    console.error("Erreur chargement budget :", err);
+    setErrorMessage("Impossible de charger le budget.");
+  }
+};
 
   return (
     <AppContext.Provider
       value={{
+        token,
+        setToken,
+        isReady,
         transactions,
+        setTransactions,
         categories,
+        setCategories,
         budget,
         errorMessage,
         successMessage,
         setErrorMessage,
         setSuccessMessage,
+        newTransaction,
+        setNewTransaction,
         addTransaction,
         deleteTransaction,
-        fetchData,
+        fetchBudget,
       }}
     >
       {children}
     </AppContext.Provider>
   );
 };
-

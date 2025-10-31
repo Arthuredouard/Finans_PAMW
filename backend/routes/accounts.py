@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify,request,current_app
-from models import Account
+from models import Account,User
 from functools import wraps
 from flask_cors import cross_origin 
 import jwt

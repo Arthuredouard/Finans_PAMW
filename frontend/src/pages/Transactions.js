@@ -1,10 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
+import { AppContext } from "../context/AppContext";
 import "../App.css";
 import "./Transactions.css";
 
 function Transactions() {
-  const [trans, setTrans] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const {
+    transactions,
+    setTransactions,
+    categories,
+    token,
+    addTransaction,
+    deleteTransaction,
+  } = useContext(AppContext);
+
   const [newTransaction, setNewTransaction] = useState({
     description: "",
     amount: "",
@@ -13,41 +21,7 @@ function Transactions() {
     date: "",
   });
 
-  const token = localStorage.getItem("token");
-
-  // Charger les transactions
-  useEffect(() => {
-    fetch("http://localhost:5000/transactions/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const sanitized = (data.transactions || []).map((t) => ({
-          ...t,
-          categories: Array.isArray(t.categories) ? t.categories : [],
-        }));
-        setTrans(sanitized);
-      })
-      .catch((err) => console.error("Erreur lors du chargement des transactions :", err));
-  }, [token]);
-
-  // Charger les catégories existantes
-  useEffect(() => {
-    fetch("http://localhost:5000/categories/", {
-      headers: { "Authorization": `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setCategories(data || []);
-      })
-      .catch((err) => console.error("Erreur lors du chargement des catégories :", err));
-  }, [token]);
-
-  // Gestion du formulaire
+  // Gestion des champs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewTransaction((prev) => ({
@@ -64,69 +38,39 @@ function Transactions() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    if (!token) {
+      alert("Token manquant. Veuillez vous reconnecter.");
+      return;
+    }
+
     const payload = {
-      amount: parseFloat(newTransaction.amount),
+      amount: newTransaction.amount,
       type: newTransaction.type,
       description: newTransaction.description,
       date: newTransaction.date || null,
       category_ids: newTransaction.category_ids,
     };
 
-    try {
-      const response = await fetch("http://localhost:5000/transactions/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        const t = {
-          ...data.transaction,
-          categories: Array.isArray(data.transaction.categories) ? data.transaction.categories : [],
-        };
-        setTrans((prev) => [...prev, t]);
-        setNewTransaction({
-          description: "",
-          amount: "",
-          type: "",
-          category_ids: [],
-          date: "",
-        });
-      } else {
-        console.error("Erreur serveur :", data.message);
-      }
-    } catch (err) {
-      console.error("Erreur fetch :", err);
-    }
+    addTransaction(payload);
+    setNewTransaction({
+      description: "",
+      amount: "",
+      type: "",
+      category_ids: [],
+      date: "",
+    });
   };
 
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:5000/transactions/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.ok) setTrans((prev) => prev.filter((t) => t.id !== id));
-      else console.error("Erreur suppression");
-    } catch (err) {
-      console.error("Erreur réseau :", err);
-    }
+  const handleDelete = (id) => {
+    deleteTransaction(id);
   };
 
   return (
     <div className="page-container">
       <h1>Transactions</h1>
 
-      {/* Formulaire d’ajout */}
       <form onSubmit={handleSubmit} className="form-section">
         <input
           type="text"
@@ -176,9 +120,8 @@ function Transactions() {
         <button type="submit">Ajouter</button>
       </form>
 
-      {/* Liste des transactions */}
       <div className="list-section">
-        {trans.length === 0 ? (
+        {transactions.length === 0 ? (
           <p>Aucune transaction enregistrée.</p>
         ) : (
           <table>
@@ -186,22 +129,22 @@ function Transactions() {
               <tr>
                 <th>Description</th>
                 <th>Montant (HTG)</th>
+                <th>Type</th>
                 <th>Catégories</th>
                 <th>Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {trans.map((t) => (
+              {transactions.map((t) => (
                 <tr key={t.id}>
                   <td>{t.description}</td>
                   <td>{t.amount}</td>
+                  <td>{t.type}</td>
                   <td>{t.categories.map((c) => c.name).join(", ") || "Aucune"}</td>
                   <td>{t.date ? new Date(t.date).toLocaleDateString() : "—"}</td>
                   <td>
-                    <button onClick={() => handleDelete(t.id)} className="delete-btn">
-                      Supprimer
-                    </button>
+                    <button className="delete-btn" onClick={() => handleDelete(t.id)}>Supprimer</button>
                   </td>
                 </tr>
               ))}

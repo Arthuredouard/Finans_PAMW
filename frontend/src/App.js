@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
 
+// ✅ Import du fichier CSS global
 import "./App.css"; // Assure-toi que ton CSS est bien dans src/App.css
 
 // Pages
@@ -10,7 +11,7 @@ import Transactions from "./pages/Transactions";
 import TransactionDetail from "./pages/TransactionDetail";
 import Categories from "./pages/Categories";
 import Budget from "./pages/Budget";
-import Login from "./pages/Login";
+import Login from "./pages/Login"
 import Register from "./pages/Register";
 
 // Composant 404
@@ -29,20 +30,21 @@ const Navbar = () => {
   );
 };
 
-function App() {
 
+function App() {
   return (
     <AppProvider>
-      <Router> 
+      <Router>
+        <Navbar />
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/ti" element={<><Navbar /><Dashboard /></>} />
-          <Route path="/dashboard" element={<><Navbar /><Dashboard /></>} />
-          <Route path="/transactions" element={<><Navbar /><Transactions /></>} />
-          <Route path="/transaction/:id" element={<><Navbar /><TransactionDetail /></>} />
-          <Route path="/categories" element={<><Navbar /><Categories /></>} />
-          <Route path="/budget" element={<><Navbar /><Budget /></>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/transaction/:id" element={<TransactionDetail />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/budget" element={<Budget />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

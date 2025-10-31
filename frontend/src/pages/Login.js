@@ -1,13 +1,13 @@
-// src/pages/Login.js
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import "../App.css";
-import "./Login.css"
+import "./Login.css";
 
 const Login = () => {
+  const { setToken } = useContext(AppContext);
   const navigate = useNavigate();
-  const [user, setUser] = useState("")
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,19 +24,15 @@ const Login = () => {
       });
 
       const data = await response.json();
-      console.log(data)
-      
-      console.log(response.ok)
+
       if (response.ok) {
-        // authentification réussie
-        localStorage.setItem("token", data.token); 
-        setUser(data.user); 
-        navigate("/dashboard");
+        localStorage.setItem("token", data.token);
+        setToken(data.token); // ✅ Mettre à jour le contexte immédiatement
+        navigate("/transactions"); // Rediriger vers transactions
       } else {
-        setError(data.message); // message renvoyé par le backend
+        setError(data.message);
       }
     } catch (err) {
-      console.log("erreur")
       setError("Erreur serveur, réessayez plus tard");
     }
   };
@@ -62,14 +58,12 @@ const Login = () => {
         />
         <button type="submit">Se connecter</button>
       </form>
-
-        <div className="login-footer">
+      <div className="login-footer">
         <p>Pas encore de compte ?</p>
         <button className="register-btn" onClick={() => navigate("/register")}>
           Inscription
         </button>
       </div>
-
     </div>
   );
 };

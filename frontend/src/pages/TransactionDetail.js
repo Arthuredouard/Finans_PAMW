@@ -10,7 +10,7 @@ function TransactionDetails() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/transactions/${id}`)
+      .get(`http://localhost:5000/api/transactions/${id}`)
       .then((res) => {
         setTransaction(res.data);
         setLoading(false);
