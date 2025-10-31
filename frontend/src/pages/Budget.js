@@ -1,33 +1,78 @@
-import React, { useContext, useMemo } from "react";
-// Importation du Contexte pour accéder aux données globales
-import { AppContext } from "../context/AppContext"; 
+import React, { useContext, useMemo, useState, useEffect } from "react";
+import { AppContext } from "../context/AppContext";
 
 const Budget = () => {
-  // Récupération du budget de base et de toutes les transactions
-  const { budget, transactions } = useContext(AppContext);
+  const { transactions } = useContext(AppContext);
+  const [budget, setBudget] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // 1. Calculer les dépenses totales (montants négatifs)
+   const normalizeType = (str = "") => {
+    return str
+      .toLowerCase()
+      .normalize("NFD") // décompose les accents
+      .replace(/[\u0300-\u036f]/g, "") // supprime les diacritiques
+      .trim();
+  };
+
+  useEffect(() => {
+    const fetchBudget = async () => {
+      const token = localStorage.getItem("token");
+      console.log("junior", token);
+
+      if (!token) {
+        setErrorMessage("Token manquant. Veuillez vous reconnecter.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/accounts/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error("Erreur du serveur :", data.message);
+          setErrorMessage(data.message || "Erreur lors du chargement du budget.");
+          return;
+        }
+
+        console.log("✅ Budget chargé :", data.balance);
+        setBudget(data.balance || 0);
+      } catch (err) {
+        console.error("Erreur chargement budget :", err);
+        setErrorMessage("Impossible de charger le budget.");
+      }
+    };
+
+    fetchBudget();
+  }, []);
+
+// --- Calcul des dépenses (type = "dépense" / "depense" / "DEPENSE" / etc.)
   const totalSpent = useMemo(() => {
     return transactions.reduce((sum, t) => {
+      const type = normalizeType(t.type);
       const amount = Number(t.amount || 0);
-      // Compte les montants négatifs (dépenses)
-      return sum + (amount < 0 ? Math.abs(amount) : 0);
+      return sum + (type === "depense" ? amount : 0);
     }, 0);
-  }, [transactions]); // Recalculer si les transactions changent
+  }, [transactions]);
 
-  // 2. Calculer les revenus totaux (montants positifs)
+  // --- Calcul des revenus (type = "revenu" / "REVENU" / etc.)
   const totalIncome = useMemo(() => {
     return transactions.reduce((sum, t) => {
+      const type = normalizeType(t.type);
       const amount = Number(t.amount || 0);
-      // Compte les montants positifs (revenus)
-      return sum + (amount > 0 ? amount : 0);
+      return sum + (type === "revenu" ? amount : 0);
     }, 0);
-  }, [transactions]); // Recalculer si les transactions changent
-  
-  // 3. Calculer le solde restant : Budget initial + Revenus - Dépenses
-  const remaining = budget + totalIncome - totalSpent; 
+  }, [transactions]);
 
-  // --- Le Rendu ---
+
+  // --- Solde restant
+  const remaining = budget + totalIncome - totalSpent;
 
   return (
     <div
@@ -39,38 +84,45 @@ const Budget = () => {
         borderRadius: "8px",
         padding: "20px",
         boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
-        border: "1px solid #ddd"
+        border: "1px solid #ddd",
       }}
     >
-      <h2 style={{ textAlign: "center", color: "#333", borderBottom: "1px solid #eee", paddingBottom: "10px" }}>
+      <h2
+        style={{
+          textAlign: "center",
+          color: "#333",
+          borderBottom: "1px solid #eee",
+          paddingBottom: "10px",
+        }}
+      >
         Résumé du Budget
       </h2>
 
       <div style={{ marginTop: "15px", lineHeight: "1.6" }}>
-        {/* Affichage du Budget initial */}
-        <p>
+        <p style={{ color: "blue" }}>
           <strong>Budget de base :</strong> {budget.toLocaleString()} HTG
         </p>
-        
-        {/* Affichage des Revenus */}
         <p style={{ color: "blue" }}>
           <strong>Total des revenus :</strong> + {totalIncome.toLocaleString()} HTG
         </p>
-
-        {/* Affichage des Dépenses */}
-        <p>
+        <p style={{ color: "blue" }}>
           <strong>Total des dépenses :</strong> - {totalSpent.toLocaleString()} HTG
         </p>
-
-        {/* Affichage du Solde Final avec style conditionnel */}
-        <p style={{ borderTop: '2px solid #ccc', paddingTop: '10px', marginTop: '15px', fontWeight: 'bold' }}>
+        <p
+          style={{
+            borderTop: "2px solid #ccc",
+            paddingTop: "10px",
+            marginTop: "15px",
+            fontWeight: "bold",
+            color : "blue"
+          }}
+        >
           <strong>Solde restant :</strong>{" "}
           <span style={{ color: remaining < 0 ? "red" : "green" }}>
             {remaining.toLocaleString()} HTG
           </span>
         </p>
 
-        {/* Message d'avertissement en cas de déficit */}
         {remaining < 0 && (
           <p
             style={{
@@ -80,13 +132,19 @@ const Budget = () => {
               textAlign: "center",
               backgroundColor: "#ffebeb",
               padding: "8px",
-              borderRadius: "4px"
+              borderRadius: "4px",
             }}
           >
-            Alerte : Vous avez dépassé votre budget !
+            ⚠️ Alerte : Vous avez dépassé votre budget !
           </p>
         )}
       </div>
+
+      {errorMessage && (
+        <p style={{ color: "red", marginTop: "10px", textAlign: "center" }}>
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 };

@@ -1,0 +1,32 @@
+.dashboard-graph {
+  max-width: 400px;       /* réduit la largeur */
+  margin: 2rem auto;      /* centre horizontalement */
+  background-color: rgba(255, 255, 255, 0.05); /* léger fond pour le graphique */
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.dashboard-graph h3 {
+  text-align: center;
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;  /* centre horizontalement */
+  gap: 2rem;               /* espace entre les images */
+  margin-bottom: 2rem;
+}
+
+.image-container img {
+  max-height: 120px;        /* réduit la taille des images */
+  width: auto;              /* conserve les proportions */
+  object-fit: contain;
+  transition: transform 0.2s;
+}
+
+.image-container img:hover {
+  transform: scale(1.05);   /* léger zoom au hover */
+}

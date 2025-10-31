@@ -1,11 +1,11 @@
-// src/pages/Login.js
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import "../App.css";
+import "./Login.css";
 
 const Login = () => {
-  const { login } = useContext(AppContext);
+  const { setToken } = useContext(AppContext);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -16,20 +16,21 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/login", {
+      const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // authentification réussie
-        login(data.user); // on met à jour le contexte
-        navigate("/dashboard");
+        localStorage.setItem("token", data.token);
+        setToken(data.token); // ✅ Mettre à jour le contexte immédiatement
+        navigate("/transactions"); // Rediriger vers transactions
       } else {
-        setError(data.message); // message renvoyé par le backend
+        setError(data.message);
       }
     } catch (err) {
       setError("Erreur serveur, réessayez plus tard");
@@ -57,6 +58,12 @@ const Login = () => {
         />
         <button type="submit">Se connecter</button>
       </form>
+      <div className="login-footer">
+        <p>Pas encore de compte ?</p>
+        <button className="register-btn" onClick={() => navigate("/register")}>
+          Inscription
+        </button>
+      </div>
     </div>
   );
 };

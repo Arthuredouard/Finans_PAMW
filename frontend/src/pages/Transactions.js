@@ -1,27 +1,27 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
-import axios from "axios";
 import "../App.css";
+import "./Transactions.css";
 
 function Transactions() {
-  const { transactions, setTransactions } = useContext(AppContext);
+  const {
+    transactions,
+    setTransactions,
+    categories,
+    token,
+    addTransaction,
+    deleteTransaction,
+  } = useContext(AppContext);
+
   const [newTransaction, setNewTransaction] = useState({
     description: "",
     amount: "",
-    category: "",
+    type: "",
+    category_ids: [],
     date: "",
   });
 
-  // Charger les transactions depuis le backend
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/transactions")
-      .then((res) => setTransactions(res.data))
-      .catch((err) => console.error("Erreur lors du chargement :", err));
-  }, [setTransactions]);
-
-  // Gérer le formulaire d’ajout
+  // Gestion des champs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewTransaction((prev) => ({
@@ -30,35 +30,47 @@ function Transactions() {
     }));
   };
 
+  const handleCategoryChange = (e) => {
+    const id = parseInt(e.target.value);
+    setNewTransaction((prev) => ({
+      ...prev,
+      category_ids: id ? [id] : [],
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!token) {
+      alert("Token manquant. Veuillez vous reconnecter.");
+      return;
+    }
 
-    const transactionToSend = {
-      ...newTransaction,
-      amount: parseFloat(newTransaction.amount), // ✅ conversion sécurisée
+    const payload = {
+      amount: newTransaction.amount,
+      type: newTransaction.type,
+      description: newTransaction.description,
+      date: newTransaction.date || null,
+      category_ids: newTransaction.category_ids,
     };
 
-    axios
-      .post("http://localhost:5000/api/transactions", transactionToSend)
-      .then((res) => {
-        setTransactions([...transactions, res.data]);
-        setNewTransaction({ description: "", amount: "", category: "", date: "" });
-      })
-      .catch((err) => console.error("Erreur lors de l’ajout :", err));
+    addTransaction(payload);
+    setNewTransaction({
+      description: "",
+      amount: "",
+      type: "",
+      category_ids: [],
+      date: "",
+    });
   };
 
   const handleDelete = (id) => {
-    axios
-      .delete(`http://localhost:5000/api/transactions/${id}`)
-      .then(() => setTransactions(transactions.filter((t) => t.id !== id)))
-      .catch((err) => console.error("Erreur lors de la suppression :", err));
+    deleteTransaction(id);
   };
 
   return (
     <div className="page-container">
       <h1>Transactions</h1>
 
-      {/* Formulaire d’ajout */}
       <form onSubmit={handleSubmit} className="form-section">
         <input
           type="text"
@@ -80,12 +92,24 @@ function Transactions() {
         />
         <input
           type="text"
-          name="category"
-          placeholder="Catégorie"
-          value={newTransaction.category}
+          name="type"
+          placeholder="Type (revenu / dépense)"
+          value={newTransaction.type}
           onChange={handleChange}
           required
         />
+        <select
+          name="category"
+          value={newTransaction.category_ids[0] || ""}
+          onChange={handleCategoryChange}
+        >
+          <option value="">-- Choisir une catégorie --</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
         <input
           type="date"
           name="date"
@@ -96,7 +120,6 @@ function Transactions() {
         <button type="submit">Ajouter</button>
       </form>
 
-      {/* Liste des transactions */}
       <div className="list-section">
         {transactions.length === 0 ? (
           <p>Aucune transaction enregistrée.</p>
@@ -106,10 +129,10 @@ function Transactions() {
               <tr>
                 <th>Description</th>
                 <th>Montant (HTG)</th>
-                <th>Catégorie</th>
+                <th>Type</th>
+                <th>Catégories</th>
                 <th>Date</th>
-                <th>Détails</th>
-                <th>Supprimer</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -117,17 +140,11 @@ function Transactions() {
                 <tr key={t.id}>
                   <td>{t.description}</td>
                   <td>{t.amount}</td>
-                  <td>{t.category}</td>
-                  <td>{t.date}</td>
+                  <td>{t.type}</td>
+                  <td>{t.categories.map((c) => c.name).join(", ") || "Aucune"}</td>
+                  <td>{t.date ? new Date(t.date).toLocaleDateString() : "—"}</td>
                   <td>
-                    <Link to={`/transactions/${t.id}`} className="detail-link">
-                      Voir
-                    </Link>
-                  </td>
-                  <td>
-                    <button onClick={() => handleDelete(t.id)} className="delete-btn">
-                      Supprimer
-                    </button>
+                    <button className="delete-btn" onClick={() => handleDelete(t.id)}>Supprimer</button>
                   </td>
                 </tr>
               ))}

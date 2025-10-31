@@ -1,0 +1,136 @@
+
+/* ============================
+   Page Login – style intégré
+   ============================ */
+
+.login-container {
+  max-width: 400px;
+  margin: 5vh auto;
+  padding: 2.5rem 2rem;
+  background-color: rgba(255, 255, 255, 0.05); /* semi-transparent pour fond sombre */
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  color: var(--text-light);
+  backdrop-filter: blur(10px);
+}
+
+.login-container h2 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.login-form input {
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-light);
+  transition: all 0.2s;
+}
+
+.login-form input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.login-form input:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(0, 255, 200, 0.3);
+}
+
+.login-form button {
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: none;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.login-form button:hover {
+  background-color: var(--accent-color);
+  color: var(--text-dark);
+  transform: scale(1.05);
+}
+
+/* Message d'erreur */
+.error {
+  background-color: rgba(255, 50, 50, 0.2);
+  color: #ff4d4f;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-container {
+    margin: 8vh auto;
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* Wrapper pour centrer le bouton */
+.logout-wrapper {
+  display: flex;
+  justify-content: center; /* centre horizontalement */
+  margin-top: 1.5rem;      /* espace au-dessus */
+}
+
+/* Bouton Logout existant */
+.logout-btn {
+  padding: 12px 28px;
+  border-radius: 10px;
+  border: none;
+  background-color: var(--accent-color);
+  color: var(--text-dark);
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.logout-btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.logout-btn:active {
+  transform: scale(0.97);
+}
+
+/* ---- Style du bouton S'inscrire ---- */
+.register-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.register-btn:hover {
+  background-color: #218838;
+}
