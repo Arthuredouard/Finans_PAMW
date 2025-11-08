@@ -23,7 +23,7 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 CORS(app, 
-     resources={r"/*": {"origins": "http://localhost:3000"}},
+     resources={r"/*": {"origins": "https://finans-pamw-ht.onrender.com"}},
      supports_credentials=True,
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
@@ -141,4 +141,5 @@ def register():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Default to 5000 for local dev
     app.run(host='0.0.0.0', port=port)
+
 
