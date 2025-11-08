@@ -15,7 +15,7 @@ const Categories = () => {
 
   // ✅ Charger les catégories au montage
   useEffect(() => {
-    fetch("http://localhost:5000/categories/")
+    fetch("https://finans-pamw.onrender.com/categories/")
       .then((res) => {
         if (!res.ok) throw new Error("Erreur lors du chargement des catégories");
         return res.json();
@@ -39,7 +39,7 @@ const Categories = () => {
       return;
     }
 
-    fetch("http://localhost:5000/categories/", {
+    fetch("https://finans-pamw.onrender.com/categories/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newCategory }),
@@ -66,7 +66,7 @@ const Categories = () => {
   const handleDelete = (id) => {
     if (!window.confirm("Voulez-vous vraiment supprimer cette catégorie ?")) return;
 
-    fetch(`http://localhost:5000/categories/${id}`, {
+    fetch(`https://finans-pamw.onrender.com/categories/${id}`, {
       method: "DELETE",
     })
       .then((res) => {
