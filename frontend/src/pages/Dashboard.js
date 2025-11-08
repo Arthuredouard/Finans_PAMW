@@ -21,7 +21,7 @@ const Dashboard = () => {
 
    useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/transactions/", {
+    fetch("https://finans-pamw.onrender.com/transactions/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -89,7 +89,7 @@ const doughnutData = {
    const handleLogout = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("http://localhost:5000/logout", {
+      const response = await fetch("https://finans-pamw.onrender.com/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
