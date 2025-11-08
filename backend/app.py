@@ -16,10 +16,6 @@ import os
 
 from app import db, app
 
-with app.app_context():
-    db.create_all()
-
-
 load_dotenv()
 
 app = Flask(__name__)
@@ -141,6 +137,9 @@ def register():
         'token': token
     }), 201
 
+
+with app.app_context():
+    db.create_all()
 
 
 
