@@ -33,7 +33,7 @@ export const AppProvider = ({ children }) => {
 
     const fetchTransactions = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/transactions/", {
+        const res = await axios.get("https://finans-pamw.onrender.com/transactions/", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const sanitized = (res.data.transactions || []).map((t) => ({
@@ -53,7 +53,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/categories/");
+        const res = await axios.get("https://finans-pamw.onrender.com/categories/");
         setCategories(res.data.categories || res.data);
       } catch (err) {
         console.error("Erreur chargement catégories :", err);
@@ -72,7 +72,7 @@ export const AppProvider = ({ children }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/transactions/",
+        "https://finans-pamw.onrender.com/transactions/",
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -96,7 +96,7 @@ export const AppProvider = ({ children }) => {
     if (!token) return;
 
     try {
-      await axios.delete(`http://localhost:5000/transactions/${id}`, {
+      await axios.delete(`https://finans-pamw.onrender.com/transactions/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransactions((prev) => prev.filter((t) => t.id !== id));
@@ -116,7 +116,7 @@ const fetchBudget = async () => {
   }
 
   try {
-    const response = await fetch("http://localhost:5000/accounts/", {
+    const response = await fetch("https://finans-pamw.onrender.com/accounts/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
