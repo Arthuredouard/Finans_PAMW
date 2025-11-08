@@ -12,6 +12,7 @@ from routes.categories import categories_bp
 from functools import wraps 
 from werkzeug.security import generate_password_hash,check_password_hash
 from models import User
+import os
 
 load_dotenv()
 
@@ -138,4 +139,6 @@ def register():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))  # Default to 5000 for local dev
+    app.run(host='0.0.0.0', port=port)
+
