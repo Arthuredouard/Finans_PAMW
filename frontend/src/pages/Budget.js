@@ -25,7 +25,7 @@ const Budget = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:5000/accounts/", {
+        const response = await fetch("https://finans-pamw.onrender.com/accounts/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
