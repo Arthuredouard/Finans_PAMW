@@ -38,7 +38,6 @@ app.register_blueprint(categories_bp, url_prefix='/categories')
 
 with app.app_context():
     # 🔄 Réinitialiser la base
-    db.drop_all()
     db.create_all()
      
 # Stockage temporaire des tokens invalidés
@@ -148,6 +147,7 @@ def register():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Default to 5000 for local dev
     app.run(host='0.0.0.0', port=port)
+
 
 
 
